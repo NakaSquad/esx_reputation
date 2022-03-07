@@ -3,14 +3,23 @@ game 'gta5'
 
 author 'Naka'
 description 'Reputation System for ESX'
-version '1.0'
+version '1.0.1'
+
+shared_script '@es_extended/imports.lua'
 
 client_scripts {
-    '@mysql-async/lib/MySQL.lua',
+    '@es_extended/locale.lua',
     'client.lua'   
 }
 
 server_scripts {
-    '@mysql-async/lib/MySQL.lua',
+    '@oxmysql/lib/MySQL.lua',
     'server.lua'
+}
+
+exports {
+    'AddReputation',
+    'RemoveReputation',
+	'ResetReputation',
+	'GetReputation'
 }

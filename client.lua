@@ -1,57 +1,30 @@
-ESX = nil
-player = {}
-coords = {}
-
-playerReputation = nil
-
-Citizen.CreateThread(function()
-    while true do
-		player = PlayerPedId()
-		coords = GetEntityCoords(player)
-        Citizen.Wait(500)
-    end
-end)
-
-Citizen.CreateThread(function()
-    while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Citizen.Wait(0)
-	end
-	while ESX.GetPlayerData().job == nil do
-		Citizen.Wait(10)
-	end
-	ESX.PlayerData = ESX.GetPlayerData()
-end)
-
-Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(1000)
-		if ESX.IsPlayerLoaded() then
-			if playerReputation == nil then
-				TriggerServerEvent('esx_reputation:findReputation')
-			end
-		end
-	end
+RegisterNetEvent('esx_reputation:resetReputation')
+AddEventHandler('esx_reputation:resetReputation', function()
+	TriggerServerEvent('esx_reputation:resetReputation')
 end)
 
 RegisterNetEvent('esx_reputation:updateReputation')
-AddEventHandler('esx_reputation:updateReputation', function(reputation)
-	playerReputation = reputation
-	print('Found Reputation: '..playerReputation)
+AddEventHandler('esx_reputation:updateReputation', function(action, job, amount)
+	TriggerServerEvent('esx_reputation:updateReputation', action, job, amount)
 end)
 
-RegisterNetEvent('esx_reputation:addReputation')
-AddEventHandler('esx_reputation:addReputation', function(reputation)
-	playerReputation = playerReputation + reputation
-	if playerReputation < 0 then
-		playerReputation = 0
-	elseif playerReputation > 100 then
-		playerReputation = 100
+function AddReputation(job, addamount)
+	TriggerServerEvent('esx_reputation:updateReputation', 'add', job, addamount)
+end
+function RemoveReputation(job, remamount)
+	TriggerServerEvent('esx_reputation:updateReputation', 'remove', job, remamount)
+end
+function ResetReputation()
+	TriggerServerEvent('esx_reputation:resetReputation')
+end
+
+function GetReputation(job)
+	local myReputation = nil
+	ESX.TriggerServerCallback('esx_reputation:getReputation', function(reputation)
+		myReputation = reputation
+	end, job)
+	while myReputation = nil do
+		Wait(1)
 	end
-	print('Player Reputation: '..playerReputation)
-	TriggerServerEvent('esx_reputation:updateReputation', playerReputation)
-end)
-
-RegisterCommand('checkrep', function()
-	print(playerReputation)
-end)
+	return myReputation
+end
