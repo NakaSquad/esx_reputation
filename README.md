@@ -2,46 +2,45 @@
 A simple reputation system for ESX V1 Final
 
 ## Requirements
-- [mysql-async](https://github.com/brouznouf/fivem-mysql-async)
+- [oxmysql](https://github.com/overextended/oxmysql/releases)
+- [esx-legacy](https://github.com/esx-framework/esx-legacy/releases)
 
 ## Installation
 - Import `esx_reputation.sql` in your database.
-- Add this in your server.cfg
+- Add this in your server.cfg after es_extended
 ```
 ensure esx_reputation
 ```
 
 ## How to Use
-When players load into the server esx_reputation will check for an existing reputation. If no reputation is found one will be made.
-
-To add/remove reputation points use the following (Client):
+To add/remove reputation points use the following (client):
 ```lua
-TriggerEvent('esx_reputation:addReputation', value)
+exports['esx_reputation']:AddReputation(job, value)
+exports['esx_reputation']:RemoveReputation(job, value)
+exports['esx_reputation']:ResetReputation()
+exports['esx_reputation']:GetReputation(job)
 ```
 
 To add/remove reputation points use the following (Server):
 ```lua
-TriggerClientEvent('esx_reputation:addReputation', source, value)
+TriggerEvent('esx_reputation:updateReputation', action, job, value) -- possible actions are 'add' and 'remove'
 ```
 
-To check for players reputation use the following:
+Examples:
 ```lua
-ESX.TriggerServerCallback('esx_reputation:getReputation', function(reputation)
-    -- Insert Code Here --
-end)
-```
-
-Here is an example how it can be used:
-```lua
-ESX.TriggerServerCallback('esx_reputation:getReputation', function(reputation)
-    local playerReputation = reputation
-
-    if playerReputation >= 70 then   -- If the player's reputation is greater than or equal to 70, do the following
-        print('You passed the test!')
-    else
-        print('You failed the test!')
-    end
-end)
+-- Adding Reputation
+exports['esx_reputation']:AddReputation('taxi', 2)
+-- Remove Reputation
+exports['esx_reputation']:AddReputation('taxi', 5)
+-- Reset Reputation
+exports['esx_reputation']:ResetReputation()
+-- Get Reputation
+local taxirep = exports['esx_reputation']:GetReputation('taxi')
+if taxirep > 10 then
+    print('madlad. current rep for taxi: '..taxirep)
+else
+    print('sadboy. current rep for taxi: '..taxirep)
+end
 ```
 
 ## Note:
